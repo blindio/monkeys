@@ -2,7 +2,7 @@
 // @name        TM Shibby Plug Injector
 // @description Route extra devices to the plug or stroker channel by patching Shibbydex's channel classifier in flight (Tampermonkey)
 // @namespace   https://shibbydex.com/
-// @version     4.0.3-2026-10-21
+// @version     4.0.4-2026-10-21
 // @updateURL   https://raw.githubusercontent.com/blindio/haptic-data/main/userscripts/TM-Shibby-plug-injector.user.js
 // @downloadURL https://raw.githubusercontent.com/blindio/haptic-data/main/userscripts/TM-Shibby-plug-injector.user.js
 // @author      Thorson Little
@@ -30,7 +30,8 @@
 
     // Lowercase substrings, not device names: the classifier tests them against
     // `${name} ${typeHint}`.toLowerCase(), so "gravity" catches "Lovense Gravity".
-    const PLUG_KEYWORDS = ["gravity", "mission", "spinel", "jordan", "nexus revo", "iker"];
+    const PLUG_KEYWORDS = ["gravity", "mission", "spinel", "jordan", "nexus revo", "iker",
+                           "pearlconch", "pearl conch"];
     const STROKER_KEYWORDS = [];
 
     const DEBUG = true;      // also record the merged lists in <head>
