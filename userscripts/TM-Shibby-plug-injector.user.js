@@ -2,9 +2,9 @@
 // @name        TM Shibby Plug Injector
 // @description Route extra devices to the plug or stroker channel by patching Shibbydex's channel classifier in flight (Tampermonkey)
 // @namespace   https://shibbydex.com/
-// @version     4.0.4-2026-10-21
-// @updateURL   https://raw.githubusercontent.com/blindio/haptic-data/main/userscripts/TM-Shibby-plug-injector.user.js
-// @downloadURL https://raw.githubusercontent.com/blindio/haptic-data/main/userscripts/TM-Shibby-plug-injector.user.js
+// @version     4.0.5-2026-10-21
+// @updateURL   https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-plug-injector.user.js
+// @downloadURL https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-plug-injector.user.js
 // @author      Thorson Little
 // @match       https://shibbydex.com/file/*
 // @run-at      document-start

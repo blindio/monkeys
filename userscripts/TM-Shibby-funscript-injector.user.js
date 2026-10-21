@@ -2,9 +2,9 @@
 // @name        TM Shibby Funscript Injector
 // @description Fill a file's missing vibe/plug/stroker tracks from the funscripts/ directory on GitHub (Tampermonkey)
 // @namespace   https://shibbydex.com/
-// @version     4.0.1-2026-10-21
-// @updateURL   https://raw.githubusercontent.com/blindio/haptic-data/main/userscripts/TM-Shibby-funscript-injector.user.js
-// @downloadURL https://raw.githubusercontent.com/blindio/haptic-data/main/userscripts/TM-Shibby-funscript-injector.user.js
+// @version     4.0.2-2026-10-21
+// @updateURL   https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-injector.user.js
+// @downloadURL https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-injector.user.js
 // @author      Thorson Little
 // @match       https://shibbydex.com/file/*
 // @run-at      document-start
@@ -39,7 +39,7 @@
 (function () {
     'use strict';
 
-    const REPO = 'blindio/haptic-data';
+    const REPO = 'blindio/monkeys';
     const BRANCH = 'main';
     const ROOT = 'funscripts';
 

@@ -2,9 +2,9 @@
 // @name        TM Shibby Funscript DL
 // @description Download deduped funscripts from Shibbydex story variants (Tampermonkey)
 // @namespace   https://shibbydex.com/
-// @version     1.03.1-2026-10-21
-// @updateURL   https://raw.githubusercontent.com/blindio/haptic-data/main/userscripts/TM-Shibby-funscript-dl.user.js
-// @downloadURL https://raw.githubusercontent.com/blindio/haptic-data/main/userscripts/TM-Shibby-funscript-dl.user.js
+// @version     1.03.2-2026-10-21
+// @updateURL   https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-dl.user.js
+// @downloadURL https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-dl.user.js
 // @author      Thorson Little
 // @match       https://shibbydex.com/file/*
 // @run-at      document-idle

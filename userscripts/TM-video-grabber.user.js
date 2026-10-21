@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name        TM Video Grabber
 // @description Step through a page's video elements and download each under its title attribute
-// @version     1.0.1-2026-10-21
-// @updateURL   https://raw.githubusercontent.com/blindio/haptic-data/main/userscripts/TM-video-grabber.user.js
-// @downloadURL https://raw.githubusercontent.com/blindio/haptic-data/main/userscripts/TM-video-grabber.user.js
+// @version     1.0.2-2026-10-21
+// @updateURL   https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-video-grabber.user.js
+// @downloadURL https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-video-grabber.user.js
 // @author      Thorson Little
 // @match       *://*/*
 // @grant       none
