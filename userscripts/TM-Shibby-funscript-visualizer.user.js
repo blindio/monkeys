@@ -2,7 +2,7 @@
 // @name        TM Shibby Funscript Visualizer
 // @description Render heatmap-style waveform graphs for a Shibbydex page's funscripts (Tampermonkey)
 // @namespace   https://shibbydex.com/
-// @version     4.2.3-2026-10-22
+// @version     4.2.4-2026-10-22
 // @updateURL   https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-visualizer.user.js
 // @downloadURL https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-visualizer.user.js
 // @author      Thorson Little
@@ -74,7 +74,6 @@
     const AUDIO_SELECTOR = "audio";
     const PLAYHEAD_WIDTH_PX = 2;
     const PLAYHEAD_COLOR = "#fff";
-    const PLAYHEAD_WARN_MS = 5000;
 
     // Font/size constants to avoid magic numbers scattered through draw functions
     const AXIS_LABEL_FONT = "9px monospace";
@@ -1071,20 +1070,20 @@
         let audioEl = null;
         let lastX = null;
         let playheadFrame = null;
-        let everFoundAudio = false;
-
-        // A hidden bar and a broken bar look identical, so say which it is.
-        setTimeout(() => {
-            if (!everFoundAudio && panel.isConnected) {
-                console.warn(`funscript visualizer: no <${AUDIO_SELECTOR}> element found, so the playhead stays hidden — the player may not use one`);
-            }
-        }, PLAYHEAD_WARN_MS);
+        let announced = false;
 
         const followAudio = () => {
             playheadFrame = requestAnimationFrame(followAudio);
 
             if (!audioEl || !audioEl.isConnected) audioEl = document.querySelector(AUDIO_SELECTOR);
-            if (audioEl) everFoundAudio = true;
+            // Announced on finding it rather than warning on failing to: the
+            // element does not exist until play is pressed, so "missing" and
+            // "not started yet" are the same observation and a timed warning
+            // just cries wolf at every page load.
+            if (audioEl && !announced) {
+                announced = true;
+                console.info(`funscript visualizer: playhead following <${AUDIO_SELECTOR}>`);
+            }
             if (!audioEl || !Number.isFinite(audioEl.currentTime)) {
                 if (lastX !== null) {
                     playhead.style.display = "none";
