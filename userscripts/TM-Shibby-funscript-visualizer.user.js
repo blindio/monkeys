@@ -2,7 +2,7 @@
 // @name        TM Shibby Funscript Visualizer
 // @description Render heatmap-style waveform graphs for a Shibbydex page's funscripts (Tampermonkey)
 // @namespace   https://shibbydex.com/
-// @version     4.2-2026-10-22
+// @version     4.2.1-2026-10-22
 // @updateURL   https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-visualizer.user.js
 // @downloadURL https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-visualizer.user.js
 // @author      Thorson Little
@@ -68,6 +68,7 @@
     const AUDIO_SELECTOR = "audio";
     const PLAYHEAD_WIDTH_PX = 2;
     const PLAYHEAD_COLOR = "#fff";
+    const PLAYHEAD_WARN_MS = 5000;
 
     // Font/size constants to avoid magic numbers scattered through draw functions
     const AXIS_LABEL_FONT = "9px monospace";
@@ -1025,8 +1026,12 @@
         ].join(";") + ";";
 
         // renderRows calls replaceChildren, so the playhead is re-added after
-        // every render and resized to the new content height.
+        // every render and resized to the new content height. Collapsed first,
+        // because measuring the container while the bar still holds its old
+        // height would measure the bar — and the height could then only
+        // ratchet upward, never follow rows that got shorter.
         const mountPlayhead = () => {
+            playhead.style.height = "0px";
             rowsContainer.appendChild(playhead);
             playhead.style.height = `${rowsContainer.scrollHeight}px`;
         };
@@ -1060,11 +1065,20 @@
         let audioEl = null;
         let lastX = null;
         let playheadFrame = null;
+        let everFoundAudio = false;
+
+        // A hidden bar and a broken bar look identical, so say which it is.
+        setTimeout(() => {
+            if (!everFoundAudio && panel.isConnected) {
+                console.warn(`funscript visualizer: no <${AUDIO_SELECTOR}> element found, so the playhead stays hidden — the player may not use one`);
+            }
+        }, PLAYHEAD_WARN_MS);
 
         const followAudio = () => {
             playheadFrame = requestAnimationFrame(followAudio);
 
             if (!audioEl || !audioEl.isConnected) audioEl = document.querySelector(AUDIO_SELECTOR);
+            if (audioEl) everFoundAudio = true;
             if (!audioEl || !Number.isFinite(audioEl.currentTime)) {
                 if (lastX !== null) {
                     playhead.style.display = "none";
@@ -1121,7 +1135,11 @@
                 const availableWidth = Math.max(MIN_ROW_WIDTH_PX, rowsContainer.clientWidth - AXIS_WIDTH_PX);
 
                 let nextRowHeight = currentRowHeight;
-                const rows = rowsContainer.children;
+                // The playhead lives in this container but is not a row: it is
+                // absolutely positioned and as tall as all of them together.
+                // Counting it would subtract its height as row chrome and
+                // divide by one row too many, driving every row to the floor.
+                const rows = Array.prototype.filter.call(rowsContainer.children, (el) => el !== playhead);
                 if (rows.length > 0) {
                     // getBoundingClientRect gives the border box; clientHeight is
                     // that minus a horizontal scrollbar. rowsContainer has no
