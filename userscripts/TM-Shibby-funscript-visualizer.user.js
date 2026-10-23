@@ -2,11 +2,11 @@
 // @name        TM Shibby Funscript Visualizer
 // @description Render heatmap-style waveform graphs for a Shibbydex page's funscripts (Tampermonkey)
 // @namespace   https://shibbydex.com/
-// @version     4.2.2-2026-10-22
+// @version     4.2.3-2026-10-22
 // @updateURL   https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-visualizer.user.js
 // @downloadURL https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-visualizer.user.js
 // @author      Thorson Little
-// @match       https://shibbydex.com/*
+// @match       https://shibbydex.com/file/*
 // @run-at      document-idle
 // @grant       GM_xmlhttpRequest
 // @connect     shibbydex.com
@@ -14,6 +14,12 @@
 // @connect     cloudflarestorage.com
 // @connect     raw.githubusercontent.com
 // ==/UserScript==
+
+// Deliberately narrower than its two siblings, which match the whole site: a
+// panel of graphs only means something for one file, and on a playlist it never
+// appeared anyway — the data element is not there yet when this runs at
+// document-idle. Widen it only alongside a reason for the panel to follow a
+// playlist, not to make the three scripts look consistent.
 
 // Haptic URLs 302 to a presigned bucket on r2.cloudflarestorage.com, and
 // Tampermonkey re-checks the redirect target against @connect ("Request was
