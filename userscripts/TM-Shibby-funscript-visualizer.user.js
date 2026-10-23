@@ -2,7 +2,7 @@
 // @name        TM Shibby Funscript Visualizer
 // @description Render heatmap-style waveform graphs for a Shibbydex page's funscripts (Tampermonkey)
 // @namespace   https://shibbydex.com/
-// @version     4.2.1-2026-10-22
+// @version     4.2.2-2026-10-22
 // @updateURL   https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-visualizer.user.js
 // @downloadURL https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-visualizer.user.js
 // @author      Thorson Little
@@ -1182,6 +1182,12 @@
 
         document.body.appendChild(panel);
         document.body.appendChild(tooltip);
+
+        // Measured again now the panel is in the document. The first render
+        // runs while it is still detached, where every box measures zero — so
+        // the bar was sized 0px tall and stayed invisible however correctly it
+        // was positioned.
+        mountPlayhead();
     }
 
     async function run() {
