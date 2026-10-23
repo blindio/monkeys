@@ -2,11 +2,11 @@
 // @name        TM Shibby Funscript Visualizer
 // @description Render heatmap-style waveform graphs for a Shibbydex page's funscripts (Tampermonkey)
 // @namespace   https://shibbydex.com/
-// @version     4.1.2-2026-10-21
+// @version     4.1.3-2026-10-22
 // @updateURL   https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-visualizer.user.js
 // @downloadURL https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-visualizer.user.js
 // @author      Thorson Little
-// @match       https://shibbydex.com/file/*
+// @match       https://shibbydex.com/*
 // @run-at      document-idle
 // @grant       GM_xmlhttpRequest
 // @connect     shibbydex.com

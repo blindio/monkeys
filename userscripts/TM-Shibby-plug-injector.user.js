@@ -2,11 +2,11 @@
 // @name        TM Shibby Plug Injector
 // @description Route extra devices to the plug or stroker channel by patching Shibbydex's channel classifier in flight (Tampermonkey)
 // @namespace   https://shibbydex.com/
-// @version     4.0.6-2026-10-21
+// @version     4.0.7-2026-10-22
 // @updateURL   https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-plug-injector.user.js
 // @downloadURL https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-plug-injector.user.js
 // @author      Thorson Little
-// @match       https://shibbydex.com/file/*
+// @match       https://shibbydex.com/*
 // @run-at      document-start
 // @grant       GM_getValue
 // @grant       GM_setValue
