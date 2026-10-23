@@ -2,7 +2,7 @@
 // @name        TM Shibby Funscript Visualizer
 // @description Render heatmap-style waveform graphs for a Shibbydex page's funscripts (Tampermonkey)
 // @namespace   https://shibbydex.com/
-// @version     4.1.3-2026-10-22
+// @version     4.2-2026-10-22
 // @updateURL   https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-visualizer.user.js
 // @downloadURL https://raw.githubusercontent.com/blindio/monkeys/main/userscripts/TM-Shibby-funscript-visualizer.user.js
 // @author      Thorson Little
@@ -60,6 +60,14 @@
     // Amber rather than red: a channel switched off in the player's haptic
     // settings is a fact about playback, not an error in the script we drew.
     const LABEL_OFF_COLOR = "#d9a441";
+
+    // The playhead is white on a black halo rather than a colour, because every
+    // palette uses most of the spectrum for data — there is no hue left that
+    // could not be mistaken for a reading. Contrast and the halo distinguish it
+    // instead of hue.
+    const AUDIO_SELECTOR = "audio";
+    const PLAYHEAD_WIDTH_PX = 2;
+    const PLAYHEAD_COLOR = "#fff";
 
     // Font/size constants to avoid magic numbers scattered through draw functions
     const AXIS_LABEL_FONT = "9px monospace";
@@ -794,7 +802,9 @@
             panel: "position:fixed;top:16px;right:16px;z-index:2147483647;background:#1e1e1e;padding:10px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.6);box-sizing:border-box;min-width:240px;min-height:160px;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px);max-width:calc(100dvw - 32px);max-height:calc(100dvh - 32px);resize:both;overflow:hidden;display:flex;flex-direction:column;",
             header: "flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:move;margin:-10px -10px 8px;padding:6px 8px;background:#141414;border-radius:8px 8px 0 0;border-bottom:1px solid #333;user-select:none;",
             flexAuto: "flex:0 0 auto;",
-            rowsContainer: `flex:1 1 auto;min-height:0;overflow:auto;scrollbar-gutter:stable;display:flex;flex-direction:column;gap:${ROW_GAP_PX}px;`,
+            // position:relative so the playhead can be absolutely placed over
+            // the rows; being in this box also means it scrolls with them.
+            rowsContainer: `position:relative;flex:1 1 auto;min-height:0;overflow:auto;scrollbar-gutter:stable;display:flex;flex-direction:column;gap:${ROW_GAP_PX}px;`,
             modeRow: "flex:0 0 auto;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;color:#aaa;font:11px monospace;margin:8px 0 2px;",
             rowPrefix: "color:#666;",
             optLabel: "cursor:pointer;",
@@ -999,6 +1009,28 @@
         let currentPixelsPerMs = pixelsPerMs;
         let currentRowHeight = ROW_HEIGHT_PX;
 
+        // One bar for every row: they all share pixelsPerMs, so a single x is
+        // the same instant on each. Past the end of a short track there is no
+        // canvas and it simply crosses the empty space, which is correct —
+        // that track really has stopped while the audio plays on.
+        const playhead = document.createElement("div");
+        playhead.style.cssText = [
+            "position:absolute", "top:0", "left:0",
+            `width:${PLAYHEAD_WIDTH_PX}px`,
+            `background:${PLAYHEAD_COLOR}`,
+            "box-shadow:0 0 0 1px rgba(0,0,0,.85)",
+            // Must never intercept the hover the tooltip depends on.
+            "pointer-events:none",
+            "display:none",
+        ].join(";") + ";";
+
+        // renderRows calls replaceChildren, so the playhead is re-added after
+        // every render and resized to the new content height.
+        const mountPlayhead = () => {
+            rowsContainer.appendChild(playhead);
+            playhead.style.height = `${rowsContainer.scrollHeight}px`;
+        };
+
         timelineRow.appendChild(buildTimeline(currentPixelsPerMs, longestMs));
         const rerender = () => {
             const strokerModel = STROKER_MODELS[currentStrokerKey];
@@ -1012,11 +1044,42 @@
             };
             renderRows(rowsContainer, entries, currentPixelsPerMs, view, tooltip, currentRowHeight);
             timelineRow.replaceChild(buildTimeline(currentPixelsPerMs, longestMs), timelineRow.lastChild);
+            mountPlayhead();
         };
 
         scaleControl.checkbox.addEventListener("change", rerender);
         shareAxisControl.checkbox.addEventListener("change", rerender);
         rerender();
+
+        // The <audio> element is looked up each frame rather than bound once,
+        // because the playlist can replace it and polling one property is
+        // cheaper than tracking that. Reading it every frame also means play,
+        // pause, seek and track change need no events of their own. The DOM is
+        // only written when the bar actually moves a pixel, so a paused player
+        // costs a property read and nothing else.
+        let audioEl = null;
+        let lastX = null;
+        let playheadFrame = null;
+
+        const followAudio = () => {
+            playheadFrame = requestAnimationFrame(followAudio);
+
+            if (!audioEl || !audioEl.isConnected) audioEl = document.querySelector(AUDIO_SELECTOR);
+            if (!audioEl || !Number.isFinite(audioEl.currentTime)) {
+                if (lastX !== null) {
+                    playhead.style.display = "none";
+                    lastX = null;
+                }
+                return;
+            }
+
+            const x = Math.round(AXIS_WIDTH_PX + audioEl.currentTime * 1000 * currentPixelsPerMs);
+            if (x === lastX) return;
+            if (lastX === null) playhead.style.display = "block";
+            lastX = x;
+            playhead.style.transform = `translateX(${x}px)`;
+        };
+        followAudio();
 
         // Dragging the native resize handle changes the panel's box size; this
         // refits pixelsPerMs to the new width (so the time axis zooms) and
@@ -1093,6 +1156,7 @@
         // it happened to be showing.
         closeButton.addEventListener("click", () => {
             resizeObserver.disconnect();
+            cancelAnimationFrame(playheadFrame);
             onDragEnd();
             tooltip.remove();
             panel.remove();
